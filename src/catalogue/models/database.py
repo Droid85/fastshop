@@ -90,3 +90,13 @@ class ProductDiscount(SQLModel, table=True):
     valid_to: datetime
 
     product: Product = Relationship(back_populates="discounts")
+
+class AdditionalProducts(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    primary_id: int = Field(foreign_key="product.id")
+    additional_id: int = Field(foreign_key="product.id")
+
+class RecommendedProducts(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    primary_id: int = Field(foreign_key="product.id")
+    recommended_id: int = Field(foreign_key="product.id")
