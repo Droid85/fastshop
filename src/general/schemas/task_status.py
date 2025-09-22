@@ -9,6 +9,7 @@ from uuid import (
     uuid4,
 )
 
+from poetry.console.commands import self
 from pydantic import (
     BaseModel,
     Field,
@@ -45,7 +46,11 @@ class TaskStatusModel(BaseModel):
 
     @classmethod
     async def get_from_redis(cls, uuid: UUID) -> Optional['TaskStatusModel']:
-        if (redis_response := await redis.get(name=cls.get_redis_key(uuid=str(uuid)))) is not None:
-            return TaskStatusModel(**json.loads(redis_response))
+        redis_key = cls.get_redis_key(str(uuid))
+        redis_response = await redis.get(redis_key)
+        json_response = json.loads(redis_response)
+        response = TaskStatusModel(**json_response)
+        return response
 
-        return None
+        # if (redis_response := await redis.get(name=cls.get_redis_key(uuid=str(uuid)))) is not None:
+        #     return TaskStatusModel(**json.loads(redis_response))

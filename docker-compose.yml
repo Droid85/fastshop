@@ -67,8 +67,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
     environment:
       discovery.type: single-node
-      xpack.security.enabled: 'false'
-      ELASTIC_PASSWORD: fastshop
+      xpack.security.enabled: "false"
       ES_JAVA_OPTS: -Xms256m -Xmx256m
       cluster.routing.allocation.disk.threshold_enabled: false
     ports:
@@ -81,9 +80,8 @@ services:
         soft: 65536
         hard: 65536
     healthcheck:
-      test: ["CMD", "curl", "-s", "-f", "-u", "elastic:fastshop", "http://elasticsearch:9200"]
+      test: ["CMD", "curl", "-s", "-f", "http://elasticsearch:9200/_cluster/health"]
       interval: 5s
-
       retries: 10
     networks:
       - web_network
@@ -98,10 +96,8 @@ services:
     environment:
       SERVERNAME: kibana
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
-      ELASTICSEARCH_USERNAME: kibana_system
-      ELASTICSEARCH_PASSWORD: fastshop
     healthcheck:
-      test: [ "CMD-SHELL", "curl -s -I http://kibana:5601 | grep -q 'HTTP/1.1 302 Found'" ]
+      test: ["CMD-SHELL", "curl -s http://kibana:5601/api/status | grep -q 'overall'"]
       interval: 5s
       retries: 10
     networks:

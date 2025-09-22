@@ -2,8 +2,8 @@ from typing import Annotated
 
 from elasticsearch import AsyncElasticsearch
 from elasticsearch_dsl import (
-    Index,
-    Search,
+    AsyncIndex as Index,
+    AsyncSearch as Search,
 )
 from fastapi import Depends
 

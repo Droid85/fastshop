@@ -1,5 +1,5 @@
 from elasticsearch_dsl import (
-    Document,
+    AsyncDocument as Document,
     Text,
 )
 

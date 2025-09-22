@@ -28,13 +28,17 @@ class ProductService(BaseService[Product]):
         products = await self.list()
 
         try:
-            await ProductElasticManager().update_index(products=products)
-        except ConnectionError as exc:
+            await ProductElasticManager().update_index(products=productsf)
+        except Exception as exc:
             await TaskStatusModel(uuid=uuid, status=TaskStatus.ERROR, details=str(exc)).save_to_redis()
+            return None
+
+        # import time
+        # time.sleep(30)
 
         # from asyncio import sleep
         #
-        # await sleep(15)
+        # await sleep(30)
 
         await TaskStatusModel(
             uuid=uuid,
