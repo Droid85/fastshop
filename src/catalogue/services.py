@@ -5,11 +5,16 @@ from fastapi import Depends
 
 from src.base_settings import base_settings
 from src.catalogue.models.database import Product
+from src.catalogue.models.database import Category
 from src.catalogue.repository import (
     ProductRepository,
     get_product_repository,
 )
-from src.catalogue.utils import ProductElasticManager
+from src.catalogue.repository import (
+    CategoryRepository,
+    get_category_repository,
+)
+from src.catalogue.utils import ProductElasticManager, CategoryElasticManager
 from src.common.enums import TaskStatus
 from src.common.service import BaseService
 from src.general.schemas.task_status import TaskStatusModel
@@ -28,7 +33,7 @@ class ProductService(BaseService[Product]):
         products = await self.list()
 
         try:
-            await ProductElasticManager().update_index(products=productsf)
+            await ProductElasticManager().update_index(products=products)
         except Exception as exc:
             await TaskStatusModel(uuid=uuid, status=TaskStatus.ERROR, details=str(exc)).save_to_redis()
             return None
@@ -49,3 +54,31 @@ class ProductService(BaseService[Product]):
 
 def get_product_service(repo: ProductRepository = Depends(get_product_repository)) -> ProductService:
     return ProductService(repository=repo)
+
+class CategoryService(BaseService[Category]):
+    def __init__(self, repository: CategoryRepository):
+        super().__init__(repository)
+
+    @staticmethod
+    async def search(keyword: str):
+        result = await CategoryElasticManager().search_category(keyword=keyword)
+        return result
+
+    async def update_search_index(self, uuid):
+        categorys = await self.list()
+
+        try:
+            await CategoryElasticManager().update_index(categorys=categorys)
+        except Exception as exc:
+            await TaskStatusModel(uuid=uuid, status=TaskStatus.ERROR, details=str(exc)).save_to_redis()
+            return None
+
+        await TaskStatusModel(
+            uuid=uuid,
+            status=TaskStatus.DONE,
+            done_at=datetime.utcnow().strftime(base_settings.date_time_format),
+        ).save_to_redis()
+
+
+def get_category_service(repo: CategoryRepository = Depends(get_category_repository)) -> CategoryService:
+    return CategoryService(repository=repo)
