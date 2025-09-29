@@ -4,13 +4,10 @@ from elasticsearch.exceptions import ConnectionError
 from fastapi import Depends
 
 from src.base_settings import base_settings
-from src.catalogue.models.database import Product
-from src.catalogue.models.database import Category
+from src.catalogue.models.database import Product, Category
 from src.catalogue.repository import (
     ProductRepository,
     get_product_repository,
-)
-from src.catalogue.repository import (
     CategoryRepository,
     get_category_repository,
 )
@@ -65,10 +62,10 @@ class CategoryService(BaseService[Category]):
         return result
 
     async def update_search_index(self, uuid):
-        categorys = await self.list()
+        categories = await self.list()
 
         try:
-            await CategoryElasticManager().update_index(categorys=categorys)
+            await CategoryElasticManager().update_index(categorys=categories)
         except Exception as exc:
             await TaskStatusModel(uuid=uuid, status=TaskStatus.ERROR, details=str(exc)).save_to_redis()
             return None

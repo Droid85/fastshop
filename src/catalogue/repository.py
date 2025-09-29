@@ -1,8 +1,7 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.catalogue.models.database import Product
-from src.catalogue.models.database import Category
+from src.catalogue.models.database import Product, Category
 from src.common.databases.postgres import get_session
 from src.common.repository.sqlalchemy import BaseSQLAlchemyRepository
 

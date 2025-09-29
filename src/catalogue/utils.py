@@ -7,16 +7,14 @@ from elasticsearch_dsl import (
 )
 from fastapi import Depends
 
-from src.catalogue.models.database import Product
-from src.catalogue.models.database import Category
+from src.catalogue.models.database import Product, Category
 from src.catalogue.models.elasticsearch import (
     PRODUCT_INDEX,
     ProductIndex,
     CATEGORY_INDEX,
     CategoryIndex,
 )
-from src.catalogue.models.pydantic import ProductElasticResponse
-from src.catalogue.models.pydantic import CategoryElasticResponse
+from src.catalogue.models.pydantic import ProductElasticResponse, CategoryElasticResponse
 from src.common.databases.elasticsearch import elastic_client
 
 
@@ -129,9 +127,9 @@ class CategoryElasticManager:
 
             return sorted_response
 
-        async def update_index(self, categorys: list[Category]) -> None:
+        async def update_index(self, categories: list[Category]) -> None:
             bulk_data = []
-            for category in categorys:
+            for category in categories:
                 action = {'index': {'_index': CATEGORY_INDEX, '_id': category.id}}
                 data = {
                     'title': category.title,
