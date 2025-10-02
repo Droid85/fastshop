@@ -68,7 +68,6 @@ async def product_detail(
 
     return response
 
-
 @router.get(
     ProductRoutesPrefixes.search,
     status_code=status.HTTP_200_OK,
